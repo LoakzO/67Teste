@@ -12,24 +12,38 @@ public class PlayerScript : MonoBehaviour
     bool punching;
     public BoxCollider handCollider;
 
+    [Header("Collect")]
+    public bool selling;
+    public int maxBodyCount;
+    public int money;
+    public Transform bodySpot;
+
+    int BodyCount;
+
     [Header("Animation")]
     public Animator animatorRef;
     public GameObject mesh;
     public string moveParameter;
 
+    [Header("Custom")]
+    public Material meshMaterial;
+
     Vector3 direction;
+    Vector3 bodySpotInit;
 
     void Start()
     {
-        
+        bodySpotInit = bodySpot.position;
     }
 
     void Update()
     {
         Move();
         RotateMesh();
-        PunchTrigger();
+        //PunchTrigger();
         SetPunchCollider();
+
+        print(BodyCount);
     }
 
     void Move()
@@ -64,16 +78,33 @@ public class PlayerScript : MonoBehaviour
     {
         if(!punching)
         {
-            if (Input.GetButtonDown("Fire1"))
-            {
-                StartCoroutine(Punch());
-            }
+            StartCoroutine(Punch());
         }
     }
 
     void SetPunchCollider()
     {
         handCollider.enabled = punching;
+    }
+
+    void Carry(Collision collisionRef)
+    {
+        if(BodyCount < maxBodyCount)
+        {
+            collisionRef.gameObject.GetComponent<EnemyScript>().carring = true;
+            collisionRef.gameObject.transform.position = bodySpot.position;
+            collisionRef.gameObject.transform.rotation = bodySpot.rotation;
+            collisionRef.gameObject.transform.SetParent(mesh.transform);
+
+            bodySpot.position = new Vector3(bodySpot.position.x, bodySpot.position.y + 0.25f, bodySpot.position.z);
+            BodyCount++;
+        }
+    }
+
+    void ResetBodyValues()
+    {
+        bodySpot.localPosition = bodySpotInit;
+        BodyCount = 0;
     }
 
     IEnumerator Punch()
@@ -87,9 +118,30 @@ public class PlayerScript : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (punching)
+        if(collision.gameObject.tag == "Enemy")
         {
-            print("Tome!!");
+            if (!punching && collision.gameObject.GetComponent<EnemyScript>().fainted)
+            {
+                Carry(collision);
+            }
+            else 
+            {
+                PunchTrigger();
+            }
+        }
+
+        if(collision.gameObject.tag == "Sellbox")
+        {
+            selling = true;
+            ResetBodyValues();
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.tag == "Sellbox")
+        {
+            selling = false;
         }
     }
 }
