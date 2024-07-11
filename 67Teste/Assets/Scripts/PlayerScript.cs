@@ -4,21 +4,24 @@ using UnityEngine;
 
 public class PlayerScript : MonoBehaviour
 {
+    [Header("Atributes")]
+    public int level = 1;
+
     [Header("Moviment")]
     public float movementSpeed;
+    public Joystick joystick;
 
     [Header("Punch")]
-    public float countDown;
+    public float coolDown;
     bool punching;
     public BoxCollider handCollider;
 
     [Header("Collect")]
     public bool selling;
     public int maxBodyCount;
+    public int BodyCount;
     public int money;
     public Transform bodySpot;
-
-    int BodyCount;
 
     [Header("Animation")]
     public Animator animatorRef;
@@ -40,16 +43,13 @@ public class PlayerScript : MonoBehaviour
     {
         Move();
         RotateMesh();
-        //PunchTrigger();
         SetPunchCollider();
-
-        print(BodyCount);
     }
 
     void Move()
     {
-        float vertical = Input.GetAxisRaw("Vertical");
-        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = joystick.Vertical;
+        float horizontal = joystick.Horizontal;
 
         direction = movementSpeed * Time.deltaTime * new Vector3(horizontal, 0, vertical);
 
@@ -96,7 +96,7 @@ public class PlayerScript : MonoBehaviour
             collisionRef.gameObject.transform.rotation = bodySpot.rotation;
             collisionRef.gameObject.transform.SetParent(mesh.transform);
 
-            bodySpot.position = new Vector3(bodySpot.position.x, bodySpot.position.y + 0.25f, bodySpot.position.z);
+            bodySpot.position = new Vector3(bodySpot.position.x, bodySpot.position.y + 0.5f, bodySpot.position.z);
             BodyCount++;
         }
     }
@@ -111,7 +111,7 @@ public class PlayerScript : MonoBehaviour
     {
         animatorRef.SetTrigger("pPunch");
         punching = true;
-        yield return new WaitForSeconds(countDown);
+        yield return new WaitForSeconds(coolDown);
         punching = false;
         StopAllCoroutines();
     }
@@ -127,6 +127,8 @@ public class PlayerScript : MonoBehaviour
             else 
             {
                 PunchTrigger();
+                collision.gameObject.GetComponent<Animator>().enabled = false; //AQUI
+                collision.gameObject.GetComponent<EnemyScript>().DisableRigidBody(false);
             }
         }
 

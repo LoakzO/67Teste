@@ -7,8 +7,9 @@ public class UIScript : MonoBehaviour
 {
     [Header("VisualRefs")]
     public Text moneyText;
+    public Text BodyCountText;
     public GameObject storePanel;
-    public Button[] buttons;
+    public Button levelUpButton;
 
     [Header("BackRefs")]
     public PlayerScript player;
@@ -22,14 +23,13 @@ public class UIScript : MonoBehaviour
     void Update()
     {
         ApplyText();
-        EnableUpgrade(0);
-        EnableUpgrade(1);
-        EnableUpgrade(2);
+        EnableUpgrade();
     }
 
     void ApplyText()
     {
         moneyText.text = player.money.ToString();
+        BodyCountText.text = player.BodyCount.ToString() + "/" + player.maxBodyCount.ToString();
     }
 
     public void OpenStore()
@@ -44,17 +44,15 @@ public class UIScript : MonoBehaviour
         }
     }
 
-    void EnableUpgrade(int index)
+    void EnableUpgrade()
     {
-        if(player.money >= upgrade.colorValue || buttons[index].tag == "Unlocked")
+        if (player.money >= upgrade.levelUpValue)
         {
-            buttons[index].interactable = true;
-            //buttons[1].interactable = true;
+            levelUpButton.interactable = true;
         }
         else
         {
-            buttons[index].interactable = false;
-            //buttons[1].interactable = false;
+            levelUpButton.interactable = false;
         }
     }
 }

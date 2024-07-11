@@ -5,18 +5,14 @@ using UnityEngine;
 public class UpgradeScript : MonoBehaviour
 {
     [Header("Values")]
-    public int colorValue;
+    public int levelUpValue;
 
     [Header("BackRefs")]
     public PlayerScript player;
-    public UIScript ui;
     public Color[] playerColor;
-
-    Color[] unlockedColors = new Color[3];
 
     void Start()
     {
-        UnlockColor(0);
         ChangeColor(0);
     }
 
@@ -28,17 +24,14 @@ public class UpgradeScript : MonoBehaviour
     public void ChangeColor(int color)
     {
         player.meshMaterial.color = playerColor[color]; 
-
-        if(playerColor[color] != unlockedColors[color])
-        {
-            player.money -= colorValue;
-            UnlockColor(color);
-        }
     }
 
-    void UnlockColor(int index)
+    public void LevelUp()
     {
-        unlockedColors[index] = playerColor[index];
-        ui.buttons[index].tag = "Unlocked";
+        player.maxBodyCount++;
+        player.money -= levelUpValue;
+        player.level++;
+        ChangeColor(player.level - 1);
+        levelUpValue *= 2;
     }
 }

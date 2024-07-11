@@ -12,12 +12,18 @@ public class EnemyScript : MonoBehaviour
     public Transform spot;
     public PlayerScript player;
 
+    [Header("Ragdoll")]
+    public Rigidbody[] bonesRb;
+    public Collider[] colliders;
+
     BoxCollider boxCollider; //MUDAR
 
     void Start()
     {
         player = GameObject.Find("Player").GetComponent<PlayerScript>();
         boxCollider = GetComponent<BoxCollider>();
+
+        DisableRigidBody(true);
     }
 
     void Update()
@@ -40,6 +46,20 @@ public class EnemyScript : MonoBehaviour
         if (carring)
         {
             boxCollider.enabled = false;
+            DisableRigidBody(true);
+
+            foreach(var collider in colliders)
+            {
+                collider.enabled = false;
+            }
+        }
+    }
+
+    public void DisableRigidBody(bool choice)
+    {
+        foreach(var rigidbody in bonesRb)
+        {
+            rigidbody.isKinematic = choice;
         }
     }
 
@@ -48,6 +68,10 @@ public class EnemyScript : MonoBehaviour
         if(collision.collider.tag == "Player")
         {
             fainted = true;
+        }
+        else
+        {
+            Physics.IgnoreCollision(GetComponent<BoxCollider>(), collision.collider); //AQUI
         }
     }
 }
