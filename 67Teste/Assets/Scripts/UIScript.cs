@@ -8,8 +8,16 @@ public class UIScript : MonoBehaviour
     [Header("VisualRefs")]
     public Text moneyText;
     public Text BodyCountText;
+    public Text valueText;
     public GameObject storePanel;
     public Button levelUpButton;
+
+    [Header("Sprite Change")]
+    public Image storeSprite;
+    public Sprite[] sprites;
+
+    [Header("Spacial UI")]
+    public GameObject arrow;
 
     [Header("BackRefs")]
     public PlayerScript player;
@@ -24,12 +32,15 @@ public class UIScript : MonoBehaviour
     {
         ApplyText();
         EnableUpgrade();
+        EnableArrow();
+        ChangeStoreSprite();
     }
 
     void ApplyText()
     {
         moneyText.text = player.money.ToString();
         BodyCountText.text = player.BodyCount.ToString() + "/" + player.maxBodyCount.ToString();
+        valueText.text = upgrade.levelUpValue.ToString();
     }
 
     public void OpenStore()
@@ -53,6 +64,30 @@ public class UIScript : MonoBehaviour
         else
         {
             levelUpButton.interactable = false;
+        }
+    }
+    
+    void EnableArrow()
+    {
+        if (player.BodyCount > 0)
+        {
+            arrow.SetActive(true);
+        }
+        else
+        {
+            arrow.SetActive(false);
+        }
+    }
+
+    void ChangeStoreSprite()
+    {
+        if (storePanel.activeInHierarchy)
+        {
+            storeSprite.sprite = sprites[1];
+        }
+        else
+        {
+            storeSprite.sprite = sprites[0];
         }
     }
 }

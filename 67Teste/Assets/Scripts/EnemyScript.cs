@@ -18,6 +18,9 @@ public class EnemyScript : MonoBehaviour
 
     BoxCollider boxCollider; //MUDAR
 
+    public float maxDistance;
+    public Vector3 initialSpot;
+
     void Start()
     {
         player = GameObject.Find("Player").GetComponent<PlayerScript>();
@@ -30,6 +33,8 @@ public class EnemyScript : MonoBehaviour
     {
         Sell();
         DisableCollider();
+
+        InertiaMovement();
     }
 
     void Sell()
@@ -60,6 +65,42 @@ public class EnemyScript : MonoBehaviour
         foreach(var rigidbody in bonesRb)
         {
             rigidbody.isKinematic = choice;
+        }
+    }
+
+    void InertiaMovement()
+    {
+
+        if (carring)
+        {
+            if (player.moving)
+            {
+                //transform.localPosition = Vector3.Lerp(InertiaSpot(), initialSpot, 3 * Time.deltaTime);
+                StartCoroutine(ApplyInertia(Vector3.back, true));
+            }
+            else
+            {
+                //transform.localPosition = Vector3.Lerp(initialSpot, InertiaSpot(), 3 * Time.deltaTime);
+                StartCoroutine(ApplyInertia(Vector3.forward, false));
+            }
+        }
+    }
+
+    Vector3 InertiaSpot()
+    {
+        return new Vector3(initialSpot.x, initialSpot.y, initialSpot.z - maxDistance);
+    }
+
+    IEnumerator ApplyInertia(Vector3 direction, bool switcher)
+    {
+        yield return new WaitForSeconds(0);
+        if(switcher && transform.localPosition.z > InertiaSpot().z)
+        {
+            transform.Translate(direction * 2 * Time.deltaTime);
+        }
+        else if(!switcher && transform.localPosition.z < initialSpot.z)
+        {
+            transform.Translate(direction * 2 * Time.deltaTime);
         }
     }
 

@@ -10,11 +10,11 @@ public class PlayerScript : MonoBehaviour
     [Header("Moviment")]
     public float movementSpeed;
     public Joystick joystick;
+    public bool moving;
 
     [Header("Punch")]
     public float coolDown;
     bool punching;
-    public BoxCollider handCollider;
 
     [Header("Collect")]
     public bool selling;
@@ -22,6 +22,7 @@ public class PlayerScript : MonoBehaviour
     public int BodyCount;
     public int money;
     public Transform bodySpot;
+    public EnemyScript[] stack;
 
     [Header("Animation")]
     public Animator animatorRef;
@@ -43,7 +44,8 @@ public class PlayerScript : MonoBehaviour
     {
         Move();
         RotateMesh();
-        SetPunchCollider();
+
+        SetState(); // AKA
     }
 
     void Move()
@@ -74,17 +76,25 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
+    void SetState()                                 //AKA
+    {
+        if(direction.normalized.magnitude > 0.1)
+        {
+            moving = true;
+        }
+        else
+        {
+            moving = false;
+        }
+        
+    }
+
     void PunchTrigger()
     {
         if(!punching)
         {
             StartCoroutine(Punch());
         }
-    }
-
-    void SetPunchCollider()
-    {
-        handCollider.enabled = punching;
     }
 
     void Carry(Collision collisionRef)
@@ -95,9 +105,25 @@ public class PlayerScript : MonoBehaviour
             collisionRef.gameObject.transform.position = bodySpot.position;
             collisionRef.gameObject.transform.rotation = bodySpot.rotation;
             collisionRef.gameObject.transform.SetParent(mesh.transform);
+            collisionRef.gameObject.GetComponent<EnemyScript>().initialSpot = bodySpot.localPosition;
+
+            Stackup(0, collisionRef.gameObject.GetComponent<EnemyScript>());
 
             bodySpot.position = new Vector3(bodySpot.position.x, bodySpot.position.y + 0.5f, bodySpot.position.z);
             BodyCount++;
+        }
+    }
+
+    void Stackup(int index, EnemyScript enemy)
+    {
+        if(stack[index] != null)
+        {
+            Stackup(index + 1, enemy);
+        }
+        else
+        {
+            stack[index] = enemy;
+            enemy.maxDistance = index * 0.2f;
         }
     }
 
