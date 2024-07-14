@@ -16,7 +16,7 @@ public class EnemyScript : MonoBehaviour
     public Rigidbody[] bonesRb;
     public Collider[] colliders;
 
-    BoxCollider boxCollider; //MUDAR
+    BoxCollider boxCollider; 
 
     public float maxDistance;
     public Vector3 initialSpot;
@@ -70,17 +70,14 @@ public class EnemyScript : MonoBehaviour
 
     void InertiaMovement()
     {
-
         if (carring)
         {
             if (player.moving)
             {
-                //transform.localPosition = Vector3.Lerp(InertiaSpot(), initialSpot, 3 * Time.deltaTime);
                 StartCoroutine(ApplyInertia(Vector3.back, true));
             }
             else
             {
-                //transform.localPosition = Vector3.Lerp(initialSpot, InertiaSpot(), 3 * Time.deltaTime);
                 StartCoroutine(ApplyInertia(Vector3.forward, false));
             }
         }
@@ -112,7 +109,7 @@ public class EnemyScript : MonoBehaviour
         }
         else
         {
-            Physics.IgnoreCollision(GetComponent<BoxCollider>(), collision.collider); //AQUI
+            Physics.IgnoreCollision(GetComponent<BoxCollider>(), collision.collider); 
         }
     }
 }

@@ -32,7 +32,7 @@ public class PlayerScript : MonoBehaviour
     [Header("Custom")]
     public Material meshMaterial;
 
-    Vector3 direction;
+    public Vector3 direction;//o
     Vector3 bodySpotInit;
 
     void Start()
@@ -44,8 +44,7 @@ public class PlayerScript : MonoBehaviour
     {
         Move();
         RotateMesh();
-
-        SetState(); // AKA
+        SetState(); 
     }
 
     void Move()
@@ -76,7 +75,7 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
-    void SetState()                                 //AKA
+    void SetState()                                 
     {
         if(direction.normalized.magnitude > 0.1)
         {
@@ -153,7 +152,7 @@ public class PlayerScript : MonoBehaviour
             else 
             {
                 PunchTrigger();
-                collision.gameObject.GetComponent<Animator>().enabled = false; //AQUI
+                collision.gameObject.GetComponent<Animator>().enabled = false; 
                 collision.gameObject.GetComponent<EnemyScript>().DisableRigidBody(false);
             }
         }
